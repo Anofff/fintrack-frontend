@@ -1,10 +1,26 @@
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import { RouterProvider } from 'react-router-dom';
+import { router } from '@/router';
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 1,
+      staleTime: 2 * 60 * 1000,
+      refetchOnWindowFocus: false,
+    },
+    mutations: {
+      retry: 0,
+    },
+  },
+});
+
 export default function App() {
   return (
-    <div className="min-h-screen bg-background dark:bg-dark-bg flex items-center justify-center p-gutter">
-      <p className="text-body-reg text-on-surface dark:text-dark-text">
-        FinTrack₵ — app shell loads from the router in{' '}
-        <code className="text-primary dark:text-inverse-primary">src/App.tsx</code>.
-      </p>
-    </div>
+    <QueryClientProvider client={queryClient}>
+      <RouterProvider router={router} />
+      {import.meta.env.DEV && <ReactQueryDevtools initialIsOpen={false} />}
+    </QueryClientProvider>
   );
 }
