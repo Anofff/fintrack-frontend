@@ -22,8 +22,11 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Deploy
-        uses: amondnet/vercel-action@v27
+        # Pin to a tagged release (the repo does not provide an @latest tag)
+        uses: amondnet/vercel-action@v41.1.4
         with:
+          # Ensure the CLI is new enough for Vercel API endpoints
+          vercel-version: latest
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
