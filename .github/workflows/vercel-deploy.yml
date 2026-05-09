@@ -1,0 +1,36 @@
+name: Deploy to Vercel
+
+on:
+  pull_request:
+  push:
+    branches:
+      - production
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: vercel-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Deploy
+        # Pin to a tagged release (the repo does not provide an @latest tag)
+        uses: amondnet/vercel-action@v41.1.4
+        with:
+          # Ensure the CLI is new enough for Vercel API endpoints
+          vercel-version: latest
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          # PRs -> Preview, production -> Production
+          vercel-args: ${{ github.ref == 'refs/heads/production' && '--prod' || '' }}
+
