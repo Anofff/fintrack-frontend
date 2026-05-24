@@ -2,6 +2,9 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { RouterProvider } from 'react-router-dom';
 import { router } from '@/router';
+import '@/utils/logger'; // Initialize logger
+import { useEffect } from 'react';
+import { initializeBackendCheck } from '@/api/health';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -17,6 +20,10 @@ const queryClient = new QueryClient({
 });
 
 export default function App() {
+  useEffect(() => {
+    initializeBackendCheck();
+  }, []);
+
   return (
     <QueryClientProvider client={queryClient}>
       <RouterProvider router={router} />

@@ -1,5 +1,6 @@
 import axios, { type AxiosError, type InternalAxiosRequestConfig } from 'axios';
 import { useAuthStore } from '@/store/auth.store';
+import { logger } from '@/utils/logger';
 
 const BASE_URL = import.meta.env.VITE_API_URL ?? '/api/v1';
 
@@ -16,6 +17,7 @@ api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
   if (token && config.headers) {
     config.headers.Authorization = `Bearer ${token}`;
   }
+  logger.debug(`API Request: ${config.method?.toUpperCase()} ${config.url}`);
   return config;
 });
 
@@ -28,8 +30,16 @@ const processQueue = (error: Error | null, token: string | null) => {
 };
 
 api.interceptors.response.use(
-  (res) => res,
+  (res) => {
+    logger.debug(`API Response: ${res.config.method?.toUpperCase()} ${res.config.url} - ${res.status}`);
+    return res;
+  },
   async (error: AxiosError) => {
+    logger.error(`API Error: ${error.config?.method?.toUpperCase()} ${error.config?.url}`, {
+      status: error.response?.status,
+      statusText: error.response?.statusText,
+      message: error.message,
+    });
     const original = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
 
     if (error.response?.status === 401 && !original._retry) {
