@@ -2,7 +2,18 @@ import axios, { type AxiosError, type InternalAxiosRequestConfig } from 'axios';
 import { useAuthStore } from '@/store/auth.store';
 import { logger } from '@/utils/logger';
 
-const BASE_URL = import.meta.env.VITE_API_URL ?? '/api/v1';
+const API_V1_SUFFIX = '/api/v1';
+
+/** Ensure VITE_API_URL always resolves to the /api/v1 prefix (e.g. Railway root → …/api/v1). */
+function normalizeApiBaseUrl(url: string | undefined): string {
+  if (!url?.trim()) return API_V1_SUFFIX;
+
+  const base = url.trim().replace(/\/+$/, '');
+  if (base.endsWith(API_V1_SUFFIX)) return base;
+  return `${base}${API_V1_SUFFIX}`;
+}
+
+const BASE_URL = normalizeApiBaseUrl(import.meta.env.VITE_API_URL);
 
 export const api = axios.create({
   baseURL: BASE_URL,
