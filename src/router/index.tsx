@@ -1,6 +1,7 @@
 import { createBrowserRouter } from 'react-router-dom';
 import { ProtectedRoute } from './ProtectedRoute';
 import { AppShell } from '@/components/layout/AppShell';
+import { LandingPage } from '@/pages/landing/LandingPage';
 import { LoginPage } from '@/pages/auth/LoginPage';
 import { RegisterPage } from '@/pages/auth/RegisterPage';
 import { OnboardingPage } from '@/pages/onboarding/OnboardingPage';
@@ -12,6 +13,7 @@ import { CategoriesPage } from '@/pages/categories/CategoriesPage';
 import { SettingsPage } from '@/pages/settings/SettingsPage';
 
 export const router = createBrowserRouter([
+  { path: '/', element: <LandingPage /> },
   { path: '/login', element: <LoginPage /> },
   { path: '/register', element: <RegisterPage /> },
 
@@ -22,7 +24,6 @@ export const router = createBrowserRouter([
       {
         element: <AppShell />,
         children: [
-          { path: '/', element: <DashboardPage /> },
           { path: '/dashboard', element: <DashboardPage /> },
           { path: '/transactions', element: <TransactionsPage /> },
           { path: '/analytics', element: <AnalyticsPage /> },

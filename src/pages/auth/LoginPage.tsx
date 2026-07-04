@@ -28,12 +28,12 @@ export function LoginPage() {
   return (
     <div className="min-h-screen bg-background dark:bg-dark-bg flex flex-col justify-center px-gutter py-xl">
       <div className="w-full max-w-md mx-auto">
-        <div className="flex items-center gap-2 mb-8 justify-center">
+        <Link to="/" className="flex items-center gap-2 mb-8 justify-center">
           <div className="w-10 h-10 rounded-md bg-primary flex items-center justify-center">
             <span className="text-white font-bold">₵</span>
           </div>
           <span className="text-h2 font-semibold text-on-surface dark:text-dark-text">FinTrack₵</span>
-        </div>
+        </Link>
 
         <div className="card p-6 md:p-8">
           <h1 className="text-h3 font-semibold text-on-surface dark:text-dark-text mb-1">Sign in</h1>
