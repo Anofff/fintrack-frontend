@@ -6,6 +6,7 @@ import '@/utils/logger';
 import { useEffect } from 'react';
 import { initializeBackendCheck } from '@/api/health';
 import { AuthBootstrap } from '@/components/auth/AuthBootstrap';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -26,11 +27,14 @@ export default function App() {
   }, []);
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <AuthBootstrap>
-        <RouterProvider router={router} />
-      </AuthBootstrap>
-      {import.meta.env.DEV && <ReactQueryDevtools initialIsOpen={false} />}
-    </QueryClientProvider>
+    <ErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <AuthBootstrap>
+          <RouterProvider router={router} />
+        </AuthBootstrap>
+        {import.meta.env.DEV && <ReactQueryDevtools initialIsOpen={false} />}
+      </QueryClientProvider>
+    </ErrorBoundary>
   );
 }
+

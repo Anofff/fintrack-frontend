@@ -1,73 +1,82 @@
-# React + TypeScript + Vite
+# FinTrack₵ Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+MoMo personal finance intelligence for Ghana. Upload MTN Mobile Money PDF statements and explore spending, categories, fees, e-levy, and trends.
 
-Currently, two official plugins are available:
+## Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- React 19 + TypeScript + Vite
+- Tailwind CSS (Precise Logic design tokens)
+- TanStack Query (server state)
+- Zustand (auth + UI)
+- React Router, Axios, Recharts, react-hook-form + Zod
 
-## React Compiler
+## Prerequisites
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- Node.js 20+ recommended
+- FinTrack backend running (default `http://localhost:3000`)
 
-## Expanding the ESLint configuration
+See `plan/backend-eguide.md` for the API contract the frontend expects.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Setup
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
+cp .env.example .env.local
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+`.env.local`:
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```env
+VITE_API_URL=http://localhost:3000/api/v1
 ```
+
+If you omit `VITE_API_URL`, the Vite dev server proxies `/api` to `http://localhost:3000` (see `vite.config.ts`).
+
+## Scripts
+
+```bash
+npm run dev      # http://localhost:5173
+npm run build    # typecheck + production bundle
+npm run preview  # serve dist/
+npm run lint     # ESLint
+```
+
+## App routes
+
+| Path | Access |
+|---|---|
+| `/` | Public landing |
+| `/login`, `/register` | Public auth |
+| `/onboarding` | Authenticated, no statements yet |
+| `/dashboard`, `/transactions`, `/analytics`, `/statements`, `/categories`, `/settings` | Authenticated, has statements |
+
+Session restore uses an httpOnly refresh cookie (`POST /auth/refresh`) on boot. The access token is kept in memory only.
+
+## Project layout
+
+```
+src/
+  api/           # Axios client + endpoint modules
+  components/    # layout, ui, charts, landing, auth
+  hooks/         # TanStack Query hooks
+  pages/         # route screens
+  router/        # routes, ProtectedRoute, RequireStatements
+  store/         # Zustand auth + UI
+  types/         # API types
+  utils/         # currency, dates, csv, errors
+```
+
+## Docs in this repo
+
+| File | Purpose |
+|---|---|
+| `plan/backend-eguide.md` | Backend API contract for sync |
+| `plan/finishing-touches.md` | Product polish checklist |
+| `instructions.md` | Original frontend build guide |
+| `plan/stitch_finora_personal_finance_intelligence/` | Landing design source (Finora → FinTrack₵) |
+
+## Notes
+
+- Design tokens live in `tailwind.config.ts` and `src/index.css`.
+- Money fields: strings on statements/transactions, numbers on analytics (see backend guide).
+- CORS + credentials must be enabled on the backend for local auth cookies.

@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -7,6 +7,7 @@ import { authApi } from '@/api/auth.api';
 import { useLogout, useMe } from '@/hooks/useAuth';
 import { useAuthStore } from '@/store/auth.store';
 import { ThemeToggle } from '@/components/ui/ThemeToggle';
+import { getApiErrorMessage } from '@/utils/errors';
 
 const schema = z.object({
   fullName: z.string().optional(),
@@ -19,6 +20,9 @@ export function SettingsPage() {
   const setUser = useAuthStore((s) => s.setUser);
   const qc = useQueryClient();
   const { mutate: logout } = useLogout();
+  const [profileMessage, setProfileMessage] = useState<{ type: 'ok' | 'err'; text: string } | null>(
+    null,
+  );
 
   const {
     register,
@@ -36,6 +40,13 @@ export function SettingsPage() {
     onSuccess: (user) => {
       setUser(user);
       qc.invalidateQueries({ queryKey: ['me'] });
+      setProfileMessage({ type: 'ok', text: 'Profile saved.' });
+    },
+    onError: (error) => {
+      setProfileMessage({
+        type: 'err',
+        text: getApiErrorMessage(error, 'Could not save profile.'),
+      });
     },
   });
 
@@ -59,7 +70,14 @@ export function SettingsPage() {
         {isLoading ? (
           <p className="text-body-sm text-outline dark:text-dark-muted">Loading…</p>
         ) : (
-          <form className="space-y-4" onSubmit={handleSubmit((data) => saveProfile(data))} noValidate>
+          <form
+            className="space-y-4"
+            onSubmit={handleSubmit((data) => {
+              setProfileMessage(null);
+              saveProfile(data);
+            })}
+            noValidate
+          >
             <div>
               <label htmlFor="email" className="text-label text-on-surface-variant dark:text-dark-muted block mb-1">
                 Email
@@ -96,6 +114,14 @@ export function SettingsPage() {
             >
               {isPending ? 'Saving…' : 'Save changes'}
             </button>
+            {profileMessage && (
+              <p
+                className={`text-body-sm ${profileMessage.type === 'ok' ? 'text-primary dark:text-inverse-primary' : 'text-error'}`}
+                role="status"
+              >
+                {profileMessage.text}
+              </p>
+            )}
           </form>
         )}
       </div>

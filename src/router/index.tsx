@@ -12,6 +12,7 @@ import { AnalyticsPage } from '@/pages/analytics/AnalyticsPage';
 import { StatementsPage } from '@/pages/statements/StatementsPage';
 import { CategoriesPage } from '@/pages/categories/CategoriesPage';
 import { SettingsPage } from '@/pages/settings/SettingsPage';
+import { NotFoundPage } from '@/pages/NotFoundPage';
 
 export const router = createBrowserRouter([
   { path: '/', element: <LandingPage /> },
@@ -40,4 +41,6 @@ export const router = createBrowserRouter([
       },
     ],
   },
+
+  { path: '*', element: <NotFoundPage /> },
 ]);
