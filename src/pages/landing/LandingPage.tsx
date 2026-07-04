@@ -1,6 +1,7 @@
-import { Link, Navigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useAuthStore } from '@/store/auth.store';
 import { AuthLoader } from '@/components/auth/AuthLoader';
+import { NavigateToAppHome } from '@/components/auth/NavigateToAppHome';
 import { LandingNav } from '@/components/landing/LandingNav';
 import { LandingLogo } from '@/components/landing/LandingLogo';
 import { HeroMockup } from '@/components/landing/HeroMockup';
@@ -78,7 +79,7 @@ export function LandingPage() {
   }
 
   if (status === 'authenticated') {
-    return <Navigate to="/dashboard" replace />;
+    return <NavigateToAppHome />;
   }
 
   return (

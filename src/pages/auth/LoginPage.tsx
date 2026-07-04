@@ -1,10 +1,11 @@
-import { Link, Navigate } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { useAuthStore } from '@/store/auth.store';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useLogin } from '@/hooks/useAuth';
 import { AuthLoader } from '@/components/auth/AuthLoader';
+import { NavigateToAppHome } from '@/components/auth/NavigateToAppHome';
 
 const schema = z.object({
   email: z.string().email('Enter a valid email'),
@@ -15,6 +16,7 @@ type LoginForm = z.infer<typeof schema>;
 
 export function LoginPage() {
   const status = useAuthStore((s) => s.status);
+  const [searchParams] = useSearchParams();
   const { mutate: login, isPending, error } = useLogin();
   const {
     register,
@@ -27,7 +29,7 @@ export function LoginPage() {
   }
 
   if (status === 'authenticated') {
-    return <Navigate to="/dashboard" replace />;
+    return <NavigateToAppHome nextParam={searchParams.get('next')} />;
   }
 
   return (
@@ -109,6 +111,12 @@ export function LoginPage() {
             </Link>
           </p>
         </div>
+
+        <p className="text-body-sm text-outline dark:text-dark-muted mt-6 text-center">
+          <Link to="/" className="hover:text-primary transition-colors">
+            ← Back to home
+          </Link>
+        </p>
       </div>
     </div>
   );

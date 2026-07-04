@@ -1,11 +1,15 @@
-import { useMutation, useQuery } from '@tanstack/react-query';
-import { useNavigate } from 'react-router-dom';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { authApi } from '@/api/auth.api';
+import { statementsApi } from '@/api/statements.api';
 import { useAuthStore } from '@/store/auth.store';
+import { resolvePostAuthPath } from '@/utils/navigation';
 
 export function useLogin() {
   const { setAccessToken, setUser } = useAuthStore();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: authApi.login,
@@ -13,7 +17,15 @@ export function useLogin() {
       setAccessToken(data.accessToken);
       const user = await authApi.getMe();
       setUser(user);
-      navigate('/dashboard');
+
+      const statements = await statementsApi.getAll();
+      queryClient.setQueryData(['statements'], statements);
+
+      const path = resolvePostAuthPath({
+        hasStatements: statements.length > 0,
+        nextParam: searchParams.get('next'),
+      });
+      navigate(path, { replace: true });
     },
   });
 }
@@ -28,7 +40,7 @@ export function useRegister() {
       setAccessToken(data.accessToken);
       const user = await authApi.getMe();
       setUser(user);
-      navigate('/onboarding');
+      navigate('/onboarding', { replace: true });
     },
   });
 }
@@ -36,11 +48,13 @@ export function useRegister() {
 export function useLogout() {
   const { logout } = useAuthStore();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: authApi.logout,
     onSettled: () => {
       logout();
+      queryClient.clear();
       navigate('/');
     },
   });
