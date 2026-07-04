@@ -23,34 +23,25 @@ export function MobileHeader() {
                        border-b border-[rgba(0,0,0,0.06)] dark:border-[rgba(255,255,255,0.06)]
                        shadow-sm flex items-center justify-between px-4"
     >
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-3 min-w-0">
         <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center flex-shrink-0">
           <span className="text-white text-label font-bold">
             {(user?.fullName ?? 'U').charAt(0).toUpperCase()}
           </span>
         </div>
-        <div>
-          <h1 className="text-h4 font-semibold text-on-surface dark:text-dark-text leading-tight">{title}</h1>
+        <div className="min-w-0">
+          <h1 className="text-h4 font-semibold text-on-surface dark:text-dark-text leading-tight truncate">
+            {title}
+          </h1>
           {user && (
-            <p className="text-label text-outline dark:text-dark-muted leading-tight">
+            <p className="text-label text-outline dark:text-dark-muted leading-tight truncate">
               {user.fullName ?? user.email}
             </p>
           )}
         </div>
       </div>
 
-      <div className="flex items-center gap-1">
-        <ThemeToggle />
-        <button
-          type="button"
-          className="w-9 h-9 flex items-center justify-center rounded-full
-                           hover:bg-surface-container-low dark:hover:bg-dark-surface-alt"
-        >
-          <span className="material-symbols-outlined text-on-surface-variant dark:text-dark-muted text-[20px]">
-            notifications
-          </span>
-        </button>
-      </div>
+      <ThemeToggle />
     </header>
   );
 }

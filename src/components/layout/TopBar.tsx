@@ -21,20 +21,7 @@ export function TopBar() {
                        border-b border-[rgba(0,0,0,0.06)] dark:border-[rgba(255,255,255,0.06)]"
     >
       <h1 className="text-h3 font-semibold text-on-surface dark:text-dark-text">{title}</h1>
-
-      <div className="flex items-center gap-2">
-        <ThemeToggle />
-        <button
-          type="button"
-          className="w-9 h-9 flex items-center justify-center rounded-full
-                           hover:bg-surface-container-low dark:hover:bg-dark-surface-alt
-                           transition-colors"
-        >
-          <span className="material-symbols-outlined text-on-surface-variant dark:text-dark-muted text-[20px]">
-            notifications
-          </span>
-        </button>
-      </div>
+      <ThemeToggle />
     </header>
   );
 }
