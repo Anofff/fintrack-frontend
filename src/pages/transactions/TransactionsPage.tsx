@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { useTransactions, useUpdateCategory } from '@/hooks/useTransactions';
 import { useCategories } from '@/hooks/useCategories';
 import { useIsDesktop } from '@/hooks/useMediaQuery';
@@ -20,17 +20,22 @@ export function TransactionsPage() {
   const [exporting, setExporting] = useState(false);
   const [exportError, setExportError] = useState<string | null>(null);
 
-  const { data, isLoading } = useTransactions(filters);
+  const queryFilters = useMemo<TransactionFilters>(
+    () => ({
+      ...filters,
+      search: debouncedSearch.trim() || undefined,
+    }),
+    [filters, debouncedSearch],
+  );
+
+  const { data, isLoading } = useTransactions(queryFilters);
   const { data: categories } = useCategories();
   const { mutate: updateCat, isPending } = useUpdateCategory();
 
-  useEffect(() => {
-    const search = debouncedSearch.trim() || undefined;
-    setFilters((f) => {
-      if (f.search === search) return f;
-      return { ...f, search, page: 1 };
-    });
-  }, [debouncedSearch]);
+  const handleSearchChange = (value: string) => {
+    setSearchInput(value);
+    setFilters((f) => (f.page === 1 ? f : { ...f, page: 1 }));
+  };
 
   const handlePage = (page: number) => {
     setFilters((f) => ({ ...f, page }));
@@ -41,7 +46,7 @@ export function TransactionsPage() {
     setExportError(null);
     setExporting(true);
     try {
-      await downloadTransactionsCsv(filters);
+      await downloadTransactionsCsv(queryFilters);
     } catch {
       setExportError('Could not export transactions. Try again.');
     } finally {
@@ -128,7 +133,7 @@ export function TransactionsPage() {
                 type="text"
                 value={searchInput}
                 placeholder="Search merchant..."
-                onChange={(e) => setSearchInput(e.target.value)}
+                onChange={(e) => handleSearchChange(e.target.value)}
                 className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-outline-variant
                            dark:border-[rgba(255,255,255,0.15)] bg-transparent
                            text-body-reg text-on-surface dark:text-dark-text

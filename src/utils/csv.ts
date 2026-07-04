@@ -59,7 +59,10 @@ function triggerDownload(csv: string, filename: string) {
 
 /** Fetches all pages matching filters (excluding page/limit) and downloads a CSV. */
 export async function downloadTransactionsCsv(filters: TransactionFilters): Promise<number> {
-  const { page: _page, limit: _limit, ...baseFilters } = filters;
+  const baseFilters: TransactionFilters = { ...filters };
+  delete baseFilters.page;
+  delete baseFilters.limit;
+
   const all: Transaction[] = [];
   let page = 1;
 
