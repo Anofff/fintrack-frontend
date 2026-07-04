@@ -298,7 +298,11 @@ export function TransactionsPage() {
                   key={cat.id}
                   disabled={isPending}
                   onClick={() => {
-                    updateCat({ id: editing.id, categoryId: cat.id });
+                    updateCat({
+                      id: editing.id,
+                      categoryId: cat.id,
+                      merchantName: editing.merchantName ?? editing.merchantNumber,
+                    });
                     setEditing(null);
                   }}
                   className={`flex items-center gap-2 px-3 py-2.5 rounded-lg border text-body-sm

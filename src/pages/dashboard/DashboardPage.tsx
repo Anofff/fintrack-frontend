@@ -10,6 +10,8 @@ import { SkeletonMetricGrid, SkeletonCard } from '@/components/ui/SkeletonCard';
 import { formatGHS, formatGHSChange } from '@/utils/currency';
 import { formatDate, formatPeriod } from '@/utils/date';
 import { UploadZone } from '@/components/ui/UploadZone';
+import { UploadError } from '@/components/ui/UploadError';
+import { StatementDownloadSteps } from '@/components/ui/StatementDownloadSteps';
 
 export function DashboardPage() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -27,17 +29,27 @@ export function DashboardPage() {
   const { data: recurring } = useRecurring();
   const { data: forecast } = useForecast();
   const { data: txData } = useTransactions({ limit: 6, statementId: activeStmt });
-  const { mutate: upload, isPending: uploading } = useUploadStatement();
+  const { mutate: upload, isPending: uploading, error: uploadError, reset: resetUpload } =
+    useUploadStatement();
 
+  // Safety net if someone reaches the dashboard with no statements.
   if (statements && statements.length === 0) {
     return (
       <div className="max-w-lg mx-auto pt-8">
-        <h2 className="text-h2 font-semibold text-on-surface dark:text-dark-text mb-1">Welcome to FinTrack₵</h2>
+        <h2 className="text-h2 font-semibold text-on-surface dark:text-dark-text mb-1">
+          Upload your first statement
+        </h2>
         <p className="text-body-sm text-outline dark:text-dark-muted mb-6">
-          Upload your first MoMo statement to get started
+          Your dashboard unlocks after FinTrack₵ analyses a MoMo PDF.
         </p>
+        <StatementDownloadSteps className="mb-4" />
         <div className="card p-6">
-          <UploadZone onFile={(file) => upload(file)} loading={uploading} />
+          <UploadZone
+            onFile={(file) => upload(file)}
+            onSelectionChange={() => resetUpload()}
+            loading={uploading}
+          />
+          <UploadError error={uploadError} />
         </div>
       </div>
     );

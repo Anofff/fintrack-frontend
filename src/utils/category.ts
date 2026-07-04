@@ -28,3 +28,10 @@ export const TRANS_TYPE_STYLES: Record<string, { bg: string; text: string; label
 export function isIncomeType(transType: string): boolean {
   return ['CASH_IN', 'CREDIT', 'ADJUSTMENT'].includes(transType);
 }
+
+/** Stable key for merchant-cache lookups (matches backend-eguide normalization). */
+export function normalizeMerchantKey(name: string | null | undefined): string | null {
+  if (!name) return null;
+  const key = name.trim().toLowerCase().replace(/\s+/g, ' ');
+  return key.length > 0 ? key : null;
+}

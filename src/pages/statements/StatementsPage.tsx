@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useStatements, useUploadStatement } from '@/hooks/useStatements';
 import { UploadZone } from '@/components/ui/UploadZone';
+import { UploadError } from '@/components/ui/UploadError';
+import { StatementDownloadSteps } from '@/components/ui/StatementDownloadSteps';
 import { SkeletonCard } from '@/components/ui/SkeletonCard';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { formatGHS } from '@/utils/currency';
@@ -9,7 +11,7 @@ import { formatDate, formatPeriod } from '@/utils/date';
 
 export function StatementsPage() {
   const { data: statements, isLoading } = useStatements();
-  const { mutate: upload, isPending, data: uploadResult, reset } = useUploadStatement();
+  const { mutate: upload, isPending, data: uploadResult, error, reset } = useUploadStatement();
   const [showUpload, setShowUpload] = useState(false);
 
   return (
@@ -52,7 +54,13 @@ export function StatementsPage() {
         <div className="card p-6">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-h4 font-semibold text-on-surface dark:text-dark-text">Upload MoMo statement</h3>
-            <button type="button" onClick={() => setShowUpload(false)}>
+            <button
+              type="button"
+              onClick={() => {
+                setShowUpload(false);
+                if (error) reset();
+              }}
+            >
               <span className="material-symbols-outlined text-outline">close</span>
             </button>
           </div>
@@ -62,22 +70,13 @@ export function StatementsPage() {
                 onSuccess: () => setShowUpload(false),
               });
             }}
+            onSelectionChange={() => {
+              if (error) reset();
+            }}
             loading={isPending}
           />
-          <div className="mt-4 p-3 rounded-lg bg-surface-container-low dark:bg-dark-surface-alt">
-            <p className="text-body-sm font-medium text-on-surface dark:text-dark-text mb-2">
-              How to download your statement:
-            </p>
-            {[
-              'Open MoMo app → tap "My Account"',
-              'Select "Statement" → choose month → tap "Download"',
-              'Upload the PDF here',
-            ].map((step, i) => (
-              <p key={step} className="text-body-sm text-outline dark:text-dark-muted mb-1">
-                {i + 1}. {step}
-              </p>
-            ))}
-          </div>
+          <UploadError error={error} />
+          <StatementDownloadSteps className="mt-4" finalStep="Upload the PDF above" />
         </div>
       )}
 
