@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useRegister } from '@/hooks/useAuth';
+import { AuthLoader } from '@/components/auth/AuthLoader';
 
 const schema = z
   .object({
@@ -20,7 +21,7 @@ const schema = z
 type RegisterForm = z.infer<typeof schema>;
 
 export function RegisterPage() {
-  const token = useAuthStore((s) => s.accessToken);
+  const status = useAuthStore((s) => s.status);
   const { mutate: registerUser, isPending, error } = useRegister();
   const {
     register,
@@ -28,7 +29,11 @@ export function RegisterPage() {
     formState: { errors },
   } = useForm<RegisterForm>({ resolver: zodResolver(schema) });
 
-  if (token) {
+  if (status === 'loading') {
+    return <AuthLoader />;
+  }
+
+  if (status === 'authenticated') {
     return <Navigate to="/dashboard" replace />;
   }
 

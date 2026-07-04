@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useLogin } from '@/hooks/useAuth';
+import { AuthLoader } from '@/components/auth/AuthLoader';
 
 const schema = z.object({
   email: z.string().email('Enter a valid email'),
@@ -13,7 +14,7 @@ const schema = z.object({
 type LoginForm = z.infer<typeof schema>;
 
 export function LoginPage() {
-  const token = useAuthStore((s) => s.accessToken);
+  const status = useAuthStore((s) => s.status);
   const { mutate: login, isPending, error } = useLogin();
   const {
     register,
@@ -21,7 +22,11 @@ export function LoginPage() {
     formState: { errors },
   } = useForm<LoginForm>({ resolver: zodResolver(schema) });
 
-  if (token) {
+  if (status === 'loading') {
+    return <AuthLoader />;
+  }
+
+  if (status === 'authenticated') {
     return <Navigate to="/dashboard" replace />;
   }
 

@@ -41,16 +41,16 @@ export function useLogout() {
     mutationFn: authApi.logout,
     onSettled: () => {
       logout();
-      navigate('/login');
+      navigate('/');
     },
   });
 }
 
 export function useMe() {
-  const token = useAuthStore((s) => s.accessToken);
+  const status = useAuthStore((s) => s.status);
   return useQuery({
     queryKey: ['me'],
     queryFn: authApi.getMe,
-    enabled: !!token,
+    enabled: status === 'authenticated',
   });
 }

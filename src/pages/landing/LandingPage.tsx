@@ -1,5 +1,6 @@
 import { Link, Navigate } from 'react-router-dom';
 import { useAuthStore } from '@/store/auth.store';
+import { AuthLoader } from '@/components/auth/AuthLoader';
 import { LandingNav } from '@/components/landing/LandingNav';
 import { LandingLogo } from '@/components/landing/LandingLogo';
 import { HeroMockup } from '@/components/landing/HeroMockup';
@@ -70,9 +71,13 @@ const FAQS = [
 ] as const;
 
 export function LandingPage() {
-  const token = useAuthStore((s) => s.accessToken);
+  const status = useAuthStore((s) => s.status);
 
-  if (token) {
+  if (status === 'loading') {
+    return <AuthLoader />;
+  }
+
+  if (status === 'authenticated') {
     return <Navigate to="/dashboard" replace />;
   }
 

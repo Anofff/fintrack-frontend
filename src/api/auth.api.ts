@@ -8,6 +8,9 @@ export const authApi = {
   login: (data: { email: string; password: string }) =>
     api.post<AuthResponse>('/auth/login', data).then((r) => r.data),
 
+  /** Exchanges the httpOnly refresh cookie for a new access token. */
+  refresh: () => api.post<AuthResponse>('/auth/refresh').then((r) => r.data),
+
   logout: () => api.post('/auth/logout').then((r) => r.data),
 
   getMe: () => api.get<User>('/users/me').then((r) => r.data),
