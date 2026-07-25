@@ -10,7 +10,7 @@ import { formatGHS } from '@/utils/currency';
 import { formatDate, formatPeriod } from '@/utils/date';
 
 export function StatementsPage() {
-  const { data: statements, isLoading, isFetching } = useStatements();
+  const { data: statements, isLoading } = useStatements();
   const { mutate: upload, isPending, data: uploadResult, error, reset } = useUploadStatement();
   const [showUpload, setShowUpload] = useState(false);
   const [uploadKey, setUploadKey] = useState(0);
@@ -46,7 +46,8 @@ export function StatementsPage() {
           <div className="flex items-center gap-3">
             <span className="material-symbols-outlined text-primary text-[20px]">check_circle</span>
             <p className="text-body-sm text-on-surface dark:text-dark-text">
-              Statement uploaded — <strong>{uploadResult.summary.inserted}</strong> transactions imported
+              <strong>{formatPeriod(uploadResult.period.start)}</strong> statement saved —{' '}
+              <strong>{uploadResult.summary.inserted}</strong> new transactions
               {uploadResult.summary.skipped > 0 && `, ${uploadResult.summary.skipped} duplicates skipped`}
             </p>
           </div>
@@ -91,7 +92,7 @@ export function StatementsPage() {
         </div>
       )}
 
-      {isLoading || isPending || (isFetching && !!uploadResult) ? (
+      {isLoading ? (
         <SkeletonCard height="h-64" />
       ) : !statements?.length ? (
         <EmptyState
