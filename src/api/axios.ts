@@ -28,6 +28,10 @@ api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
   if (token && config.headers) {
     config.headers.Authorization = `Bearer ${token}`;
   }
+  // FormData needs a browser-generated multipart boundary; default json Content-Type breaks uploads.
+  if (config.data instanceof FormData && config.headers) {
+    delete config.headers['Content-Type'];
+  }
   logger.debug(`API Request: ${config.method?.toUpperCase()} ${config.url}`);
   return config;
 });

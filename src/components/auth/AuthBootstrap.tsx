@@ -1,13 +1,21 @@
-import { useEffect, type ReactNode } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { authApi } from '@/api/auth.api';
 import { useAuthStore } from '@/store/auth.store';
 
 /**
- * Restores the session on app boot via the httpOnly refresh cookie.
- * Does not persist the access token — only exchanges the cookie for a new one.
+ * Restores the session on app boot: rehydrate sessionStorage, then refresh cookie if needed.
  */
 export function AuthBootstrap({ children }: { children: ReactNode }) {
+  const [hydrated, setHydrated] = useState(() => useAuthStore.persist.hasHydrated());
+
   useEffect(() => {
+    if (hydrated) return;
+    return useAuthStore.persist.onFinishHydration(() => setHydrated(true));
+  }, [hydrated]);
+
+  useEffect(() => {
+    if (!hydrated) return;
+
     let cancelled = false;
 
     async function restoreSession() {
@@ -40,7 +48,7 @@ export function AuthBootstrap({ children }: { children: ReactNode }) {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [hydrated]);
 
   return children;
 }

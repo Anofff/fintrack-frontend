@@ -49,6 +49,27 @@ export function UploadZone({ onFile, loading = false, onSelectionChange }: Uploa
     disabled: loading,
   });
 
+  if (loading) {
+    return (
+      <div
+        className="flex flex-col items-center justify-center gap-4 py-12 px-6"
+        role="status"
+        aria-live="polite"
+        aria-label="Uploading statement"
+      >
+        <div className="w-10 h-10 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+        <div className="text-center">
+          <p className="text-body-mid font-medium text-on-surface dark:text-dark-text">
+            Analysing your statement…
+          </p>
+          <p className="text-body-sm text-outline dark:text-dark-muted mt-1">
+            {selectedFile ? selectedFile.name : 'This can take a few seconds'}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   if (selectedFile) {
     return (
       <div className="flex flex-col items-center gap-4 py-6">
@@ -67,18 +88,16 @@ export function UploadZone({ onFile, loading = false, onSelectionChange }: Uploa
           <button
             type="button"
             onClick={() => onFile(selectedFile)}
-            disabled={loading}
             className="px-6 py-2.5 bg-primary text-white rounded-lg text-body-mid font-medium
-                       hover:bg-primary-container transition-colors disabled:opacity-60"
+                       hover:bg-primary-container transition-colors"
           >
-            {loading ? 'Uploading…' : 'Upload and analyse'}
+            Upload and analyse
           </button>
           <button
             type="button"
             onClick={() => selectFile(null)}
-            disabled={loading}
             className="px-4 py-2.5 text-outline dark:text-dark-muted text-body-sm
-                       hover:text-on-surface disabled:opacity-60"
+                       hover:text-on-surface"
           >
             Remove
           </button>

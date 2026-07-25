@@ -9,10 +9,7 @@ export const statementsApi = {
   upload: (file: File) => {
     const form = new FormData();
     form.append('file', file);
-    return api
-      .post<UploadResult>('/statements/upload', form, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      })
-      .then((r) => r.data);
+    // Let axios/browser set multipart boundary — manual Content-Type breaks parsing.
+    return api.post<UploadResult>('/statements/upload', form).then((r) => r.data);
   },
 };

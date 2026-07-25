@@ -43,11 +43,12 @@ export function OnboardingPage() {
 
         <div className="card p-6">
           <UploadZone
-            onFile={(file) =>
+            onFile={(file) => {
+              reset();
               upload(file, {
                 onSuccess: () => navigate('/dashboard', { replace: true }),
-              })
-            }
+              });
+            }}
             onSelectionChange={() => reset()}
             loading={isPending}
           />

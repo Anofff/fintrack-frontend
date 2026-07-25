@@ -24,10 +24,12 @@ export function useUploadStatement() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: statementsApi.upload,
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['statements'] });
-      qc.invalidateQueries({ queryKey: ['transactions'] });
-      qc.invalidateQueries({ queryKey: ['analytics'] });
+    onSuccess: async () => {
+      await Promise.all([
+        qc.invalidateQueries({ queryKey: ['statements'] }),
+        qc.invalidateQueries({ queryKey: ['transactions'] }),
+        qc.invalidateQueries({ queryKey: ['analytics'] }),
+      ]);
     },
   });
 }

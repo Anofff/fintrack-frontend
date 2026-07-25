@@ -79,4 +79,5 @@ src/
 
 - Design tokens live in `tailwind.config.ts` and `src/index.css`.
 - Money fields: strings on statements/transactions, numbers on analytics (see backend guide).
-- CORS + credentials must be enabled on the backend for local auth cookies.
+- CORS + credentials must be enabled on the backend for auth cookies (required in production when the API is on a different domain than the Vercel app).
+- On Vercel, set `VITE_API_URL` to your backend (e.g. `https://your-api.railway.app/api/v1`) and redeploy — it is baked in at build time.

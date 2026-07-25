@@ -10,9 +10,10 @@ import { formatGHS } from '@/utils/currency';
 import { formatDate, formatPeriod } from '@/utils/date';
 
 export function StatementsPage() {
-  const { data: statements, isLoading } = useStatements();
+  const { data: statements, isLoading, isFetching } = useStatements();
   const { mutate: upload, isPending, data: uploadResult, error, reset } = useUploadStatement();
   const [showUpload, setShowUpload] = useState(false);
+  const [uploadKey, setUploadKey] = useState(0);
 
   return (
     <div className="space-y-6">
@@ -23,9 +24,14 @@ export function StatementsPage() {
         </div>
         <button
           type="button"
-          onClick={() => setShowUpload(true)}
+          onClick={() => {
+            setUploadKey((k) => k + 1);
+            setShowUpload(true);
+          }}
+          disabled={isPending}
           className="flex items-center gap-2 px-4 py-2.5 bg-primary text-white rounded-lg
-                     text-body-sm font-medium hover:bg-primary-container transition-colors"
+                     text-body-sm font-medium hover:bg-primary-container transition-colors
+                     disabled:opacity-60"
         >
           <span className="material-symbols-outlined text-[18px]">upload</span>
           Upload statement
@@ -50,22 +56,28 @@ export function StatementsPage() {
         </div>
       )}
 
+      <UploadError error={error} />
+
       {showUpload && (
         <div className="card p-6">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-h4 font-semibold text-on-surface dark:text-dark-text">Upload MoMo statement</h3>
             <button
               type="button"
+              disabled={isPending}
               onClick={() => {
                 setShowUpload(false);
                 if (error) reset();
               }}
+              className="disabled:opacity-40"
             >
               <span className="material-symbols-outlined text-outline">close</span>
             </button>
           </div>
           <UploadZone
+            key={uploadKey}
             onFile={(file) => {
+              reset();
               upload(file, {
                 onSuccess: () => setShowUpload(false),
               });
@@ -75,12 +87,11 @@ export function StatementsPage() {
             }}
             loading={isPending}
           />
-          <UploadError error={error} />
           <StatementDownloadSteps className="mt-4" finalStep="Upload the PDF above" />
         </div>
       )}
 
-      {isLoading ? (
+      {isLoading || isPending || (isFetching && !!uploadResult) ? (
         <SkeletonCard height="h-64" />
       ) : !statements?.length ? (
         <EmptyState
@@ -90,7 +101,10 @@ export function StatementsPage() {
           action={
             <button
               type="button"
-              onClick={() => setShowUpload(true)}
+              onClick={() => {
+                setUploadKey((k) => k + 1);
+                setShowUpload(true);
+              }}
               className="px-6 py-2.5 bg-primary text-white rounded-lg text-body-sm font-medium"
             >
               Upload statement

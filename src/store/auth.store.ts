@@ -35,8 +35,8 @@ export const useAuthStore = create<AuthState>()(
     {
       name: 'fintrack-auth',
       storage: createJSONStorage(() => sessionStorage),
-      // Never persist accessToken — restore via httpOnly refresh cookie on boot.
-      partialize: (state) => ({ user: state.user }),
+      // accessToken in sessionStorage survives refresh; refresh cookie rotates it when expired.
+      partialize: (state) => ({ user: state.user, accessToken: state.accessToken }),
     },
   ),
 );
