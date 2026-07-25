@@ -10,6 +10,7 @@ import {
 } from 'recharts';
 import type { MonthTrend } from '@/types/api.types';
 import { formatGHS } from '@/utils/currency';
+import { formatPeriod } from '@/utils/date';
 
 interface TrendGroupedChartProps {
   trends: MonthTrend[];
@@ -17,7 +18,7 @@ interface TrendGroupedChartProps {
 
 export function TrendGroupedChart({ trends }: TrendGroupedChartProps) {
   const data = trends.map((t) => ({
-    label: t.periodLabel,
+    label: formatPeriod(t.periodStart),
     spent: t.totalSpent,
     received: t.totalReceived,
   }));

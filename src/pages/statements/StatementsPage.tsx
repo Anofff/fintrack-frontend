@@ -20,7 +20,9 @@ export function StatementsPage() {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-h1 font-semibold text-on-surface dark:text-dark-text">Statements</h2>
-          <p className="text-body-sm text-outline dark:text-dark-muted mt-0.5">Your uploaded MoMo statements</p>
+          <p className="text-body-sm text-outline dark:text-dark-muted mt-0.5">
+            Grouped by calendar month — overlapping MoMo PDFs dedupe automatically
+          </p>
         </div>
         <button
           type="button"
@@ -46,7 +48,7 @@ export function StatementsPage() {
           <div className="flex items-center gap-3">
             <span className="material-symbols-outlined text-primary text-[20px]">check_circle</span>
             <p className="text-body-sm text-on-surface dark:text-dark-text">
-              <strong>{formatPeriod(uploadResult.period.start)}</strong> statement saved —{' '}
+              <strong>{formatPeriod(uploadResult.period.start)}</strong> updated —{' '}
               <strong>{uploadResult.summary.inserted}</strong> new transactions
               {uploadResult.summary.skipped > 0 && `, ${uploadResult.summary.skipped} duplicates skipped`}
             </p>
@@ -144,6 +146,7 @@ export function StatementsPage() {
                       </p>
                       <p className="text-body-sm text-outline dark:text-dark-muted">
                         {formatDate(stmt.periodStart)} – {formatDate(stmt.periodEnd)}
+                        {' · '}Updated {formatDate(stmt.uploadedAt)}
                       </p>
                     </td>
                     <td className="py-3 px-4 text-body-sm text-on-surface dark:text-dark-text">—</td>
